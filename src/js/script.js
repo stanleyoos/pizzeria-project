@@ -157,24 +157,37 @@
 
         // for every option in this category
         for (let optionId in param.options) {
+          const condition =
+            formData[paramId] && formData[paramId].includes(optionId)
           // determine option value, e.g. optionId = 'olives', option = { label: 'Olives', price: 2, default: true }
           const option = param.options[optionId]
-          console.log(optionId, option)
+          //console.log(optionId, option)
 
           // check if there is param with a name of paramId in formData and if it includes optionId
-          if (formData[paramId] && formData[paramId].includes(optionId)) {
+          if (condition) {
             // check if the option is not default
             if (!option.default) {
               // add option price to price variable
               price += option.price
-              console.log(price)
+              //console.log(price)
             }
           } else {
             // check if the option is default
             if (option.default) {
               // reduce price variable
               price -= option.price
-              console.log(price)
+              //console.log(price)
+            }
+          }
+          const optionImage = thisProduct.imageWrapper.querySelector(
+            `.${paramId}-${optionId}`
+          )
+          //console.log(optionImage)
+          if (optionImage) {
+            if (condition) {
+              optionImage.classList.add(classNames.menuProduct.imageVisible)
+            } else {
+              optionImage.classList.remove(classNames.menuProduct.imageVisible)
             }
           }
         }
