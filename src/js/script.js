@@ -43,8 +43,8 @@
   const settings = {
     amountWidget: {
       defaultValue: 1,
-      defaultMin: 1,
-      defaultMax: 9,
+      defaultMin: 0,
+      defaultMax: 10,
     },
   }
 
@@ -63,6 +63,7 @@
       this.getElements()
       this.initAccordion()
       this.initOrderForm()
+      this.initAmountWidget()
       this.processOrder()
     }
 
@@ -75,8 +76,18 @@
 
       menuContainer.appendChild(this.element)
     }
+    initAmountWidget() {
+      this.amountWidget = new AmountWidget(this.amountWidgetElem)
+      this.amountWidgetElem.addEventListener('updated', () =>
+        this.processOrder()
+      )
+    }
     getElements() {
       const thisProduct = this
+
+      thisProduct.amountWidgetElem = thisProduct.element.querySelector(
+        select.menuProduct.amountWidget
+      )
 
       thisProduct.imageWrapper = thisProduct.element.querySelector(
         select.menuProduct.imageWrapper
@@ -194,7 +205,69 @@
       }
 
       // update calculated price in the HTML
+      price *= thisProduct.amountWidget.value
       thisProduct.priceElem.innerHTML = price
+    }
+  }
+
+  class AmountWidget {
+    constructor(element) {
+      const thisWidget = this
+      console.log('AmountWidget: ', thisWidget)
+      console.log('constrctors arguments: ', element)
+      this.getElements(element)
+      this.setValue(settings.amountWidget.defaultValue)
+      this.initActions()
+    }
+
+    getElements(element) {
+      const thisWidget = this
+
+      thisWidget.element = element
+      thisWidget.input = thisWidget.element.querySelector(
+        select.widgets.amount.input
+      )
+      thisWidget.linkDecrease = thisWidget.element.querySelector(
+        select.widgets.amount.linkDecrease
+      )
+      thisWidget.linkIncrease = thisWidget.element.querySelector(
+        select.widgets.amount.linkIncrease
+      )
+    }
+
+    setValue(value) {
+      const thisWidget = this
+      const newValue = parseInt(value)
+
+      // add validation
+      if (
+        thisWidget.value !== newValue &&
+        !isNaN(newValue) &&
+        newValue >= settings.amountWidget.defaultMin &&
+        newValue <= settings.amountWidget.defaultMax
+      ) {
+        thisWidget.value = newValue
+        thisWidget.announce()
+      }
+      thisWidget.input.value = thisWidget.value
+    }
+    initActions() {
+      const thisWidget = this
+      thisWidget.input.addEventListener('change', () =>
+        thisWidget.setValue(thisWidget.input.value)
+      )
+      thisWidget.linkIncrease.addEventListener('click', () =>
+        thisWidget.setValue(thisWidget.value + 1)
+      )
+      thisWidget.linkDecrease.addEventListener('click', () =>
+        thisWidget.setValue(thisWidget.value - 1)
+      )
+    }
+    announce() {
+      const thisWidget = this
+      const event = new Event('updated')
+
+      thisWidget.element.dispatchEvent(event)
     }
   }
 
