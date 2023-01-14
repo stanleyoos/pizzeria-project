@@ -26,7 +26,8 @@
     },
     widgets: {
       amount: {
-        input: 'input[name="amount"]',
+        // name => class
+        input: 'input[class="amount"]',
         linkDecrease: 'a[href="#less"]',
         linkIncrease: 'a[href="#more"]',
       },
@@ -227,6 +228,7 @@
       thisWidget.input = thisWidget.element.querySelector(
         select.widgets.amount.input
       )
+      console.log(thisWidget.input)
       thisWidget.linkDecrease = thisWidget.element.querySelector(
         select.widgets.amount.linkDecrease
       )
@@ -249,6 +251,7 @@
         thisWidget.value = newValue
         thisWidget.announce()
       }
+
       thisWidget.input.value = thisWidget.value
     }
     initActions() {
@@ -268,6 +271,20 @@
       const event = new Event('updated')
 
       thisWidget.element.dispatchEvent(event)
+    }
+  }
+
+  class Cart {
+    constructor(element) {
+      this.products = {}
+      this.getElements(element)
+
+      console.log('new Cart', this)
+    }
+
+    getElements(element) {
+      this.dom = {}
+      this.dom.wrapper = element
     }
   }
 
