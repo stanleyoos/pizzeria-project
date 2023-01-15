@@ -188,6 +188,7 @@
       thisProduct.dom.cartButton.addEventListener('click', function (event) {
         event.preventDefault()
         thisProduct.processOrder()
+        thisProduct.addToCart()
       })
     }
 
@@ -195,7 +196,7 @@
       const thisProduct = this
 
       // covert form to object structure e.g. { sauce: ['tomato'], toppings: ['olives', 'redPeppers']}
-      const formData = utils.serializeFormToObject(thisProduct.form)
+      const formData = utils.serializeFormToObject(thisProduct.dom.form)
       //console.log('formData', formData)
 
       // set price to default price
@@ -246,8 +247,54 @@
       }
 
       // update calculated price in the HTML
+      thisProduct.priceSingle = price
       price *= thisProduct.amountWidget.value
+
       thisProduct.dom.priceElem.innerHTML = price
+    }
+    addToCart() {
+      // app.cart to instancja klasy Cart, tak więc mozemy odwołać się do metody add
+      app.cart.add(this.prepareCartProduct(this.prepareCartProductParams()))
+    }
+    prepareCartProduct(params) {
+      const thisProduct = this
+      const productSummary = {
+        params: params,
+        id: thisProduct.id,
+        name: thisProduct.data.name,
+        amount: thisProduct.amountWidget.value,
+        priceSingle: thisProduct.priceSingle,
+        price: thisProduct.priceSingle * thisProduct.amountWidget.value,
+      }
+      return productSummary
+    }
+    prepareCartProductParams() {
+      const thisProduct = this
+      const formData = utils.serializeFormToObject(thisProduct.dom.form)
+      const params = {}
+      //console.log(formData)
+      // for every category (param)...
+      for (let paramId in thisProduct.data.params) {
+        const param = thisProduct.data.params[paramId]
+        params[paramId] = {
+          label: param.label,
+          options: {},
+        }
+
+        for (let optionId in param.options) {
+          const option = param.options[optionId]
+
+          const condition =
+            formData[paramId] && formData[paramId].includes(optionId)
+
+          if (condition) {
+            //console.log(option)
+            params[paramId].options[optionId] = option.label
+          }
+        }
+      }
+      console.log(params)
+      return params
     }
   }
 
@@ -319,7 +366,7 @@
       this.products = {}
       this.getElements(element)
       this.initActions()
-      console.log('new Cart', this)
+      //console.log('new Cart', this)
     }
 
     getElements(element) {
@@ -328,6 +375,10 @@
       this.dom.toggleTrigger = this.dom.wrapper.querySelector(
         select.cart.toggleTrigger
       )
+      this.dom.productList = this.dom.wrapper.querySelector(
+        select.cart.productList
+      )
+      console.log(this.dom.productList)
     }
 
     initActions() {
@@ -335,6 +386,13 @@
       thisCart.dom.toggleTrigger.addEventListener('click', () => {
         thisCart.dom.wrapper.classList.toggle(classNames.cart.wrapperActive)
       })
+    }
+
+    add(menuProduct) {
+      console.log('adding product', menuProduct)
+      const generatedHTML = templates.cartProduct(menuProduct)
+      const generatedDOM = utils.createDOMFromHTML(generatedHTML)
+      this.dom.productList.appendChild(generatedDOM)
     }
   }
 
