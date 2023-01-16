@@ -293,7 +293,7 @@
           }
         }
       }
-      console.log(params)
+      //console.log(params)
       return params
     }
   }
@@ -363,22 +363,18 @@
 
   class Cart {
     constructor(element) {
-      this.products = {}
+      this.products = []
       this.getElements(element)
       this.initActions()
       //console.log('new Cart', this)
     }
 
     getElements(element) {
-      this.dom = {}
+      this.dom = []
       this.dom.wrapper = element
-      this.dom.toggleTrigger = this.dom.wrapper.querySelector(
-        select.cart.toggleTrigger
-      )
-      this.dom.productList = this.dom.wrapper.querySelector(
-        select.cart.productList
-      )
-      console.log(this.dom.productList)
+      this.dom.toggleTrigger = element.querySelector(select.cart.toggleTrigger)
+      this.dom.productList = element.querySelector(select.cart.productList)
+      //console.log(this.dom.productList)
     }
 
     initActions() {
@@ -389,10 +385,53 @@
     }
 
     add(menuProduct) {
-      console.log('adding product', menuProduct)
+      //console.log('adding product', menuProduct)
       const generatedHTML = templates.cartProduct(menuProduct)
       const generatedDOM = utils.createDOMFromHTML(generatedHTML)
       this.dom.productList.appendChild(generatedDOM)
+      this.products.push(new CartProduct(menuProduct, generatedDOM))
+      //console.log('this.products', this.products)
+    }
+  }
+
+  class CartProduct {
+    constructor(menuProduct, element) {
+      const thisCartProduct = this
+      thisCartProduct.id = menuProduct.id
+      thisCartProduct.name = menuProduct.name
+      thisCartProduct.amount = menuProduct.amount
+      thisCartProduct.priceSingle = menuProduct.priceSingle
+      thisCartProduct.price = menuProduct.price
+      thisCartProduct.params = menuProduct.params
+      this.getElements(element)
+      this.initAmountWidget()
+      //console.log('thisCartProduct', thisCartProduct)
+    }
+    getElements(element) {
+      const thisCartProduct = this
+      thisCartProduct.dom = {}
+      // element = generatedDOM
+      thisCartProduct.dom.wrapper = element
+      thisCartProduct.dom.amountWidget = element.querySelector(
+        select.cartProduct.amountWidget
+      )
+      thisCartProduct.dom.price = element.querySelector(
+        select.cartProduct.price
+      )
+      thisCartProduct.dom.edit = element.querySelector(select.cartProduct.edit)
+      thisCartProduct.dom.remove = element.querySelector(
+        select.cartProduct.remove
+      )
+    }
+    initAmountWidget() {
+      this.amountWidget = new AmountWidget(this.dom.amountWidget)
+      //console.log(this.dom.price.innerHTML, this.price, this.amount)
+      this.dom.amountWidget.addEventListener('updated', () => {
+        this.amount = this.amountWidget.input.value
+        this.price = this.amount * this.priceSingle
+        this.dom.price.innerText = this.price
+        //console.log(this.dom.price.innerHTML, this.price, this.amount)
+      })
     }
   }
 
