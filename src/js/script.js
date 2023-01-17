@@ -93,32 +93,37 @@
 
   class Product {
     constructor(id, data) {
-      this.id = id
-      this.data = data
+      const thisProduct = this
+      thisProduct.id = id
+      thisProduct.data = data
 
-      this.renderInMenu()
-      this.getElements()
-      this.initAccordion()
-      this.initOrderForm()
-      this.initAmountWidget()
-      this.processOrder()
+      thisProduct.renderInMenu()
+      thisProduct.getElements()
+      thisProduct.initAccordion()
+      thisProduct.initOrderForm()
+      thisProduct.initAmountWidget()
+      thisProduct.processOrder()
       //console.log(this)
     }
 
     renderInMenu() {
-      const generatedHTML = templates.menuProduct(this.data)
+      const thisProduct = this
+      const generatedHTML = templates.menuProduct(thisProduct.data)
 
-      this.element = utils.createDOMFromHTML(generatedHTML)
+      thisProduct.element = utils.createDOMFromHTML(generatedHTML)
 
       const menuContainer = document.querySelector(select.containerOf.menu)
 
-      menuContainer.appendChild(this.element)
+      menuContainer.appendChild(thisProduct.element)
     }
     initAmountWidget() {
-      this.amountWidget = new AmountWidget(this.dom.amountWidgetElem)
-      this.dom.amountWidgetElem.addEventListener('updated', () =>
-        this.processOrder()
+      const thisProduct = this
+      thisProduct.amountWidget = new AmountWidget(
+        thisProduct.dom.amountWidgetElem
       )
+      thisProduct.dom.amountWidgetElem.addEventListener('updated', function () {
+        thisProduct.processOrder()
+      })
     }
     getElements() {
       const thisProduct = this
@@ -303,9 +308,9 @@
       const thisWidget = this
       //console.log('AmountWidget: ', thisWidget)
       //console.log('constrctors arguments: ', element)
-      this.getElements(element)
-      this.setValue(settings.amountWidget.defaultValue)
-      this.initActions()
+      thisWidget.getElements(element)
+      thisWidget.setValue(settings.amountWidget.defaultValue)
+      thisWidget.initActions()
     }
 
     getElements(element) {
@@ -343,19 +348,21 @@
     }
     initActions() {
       const thisWidget = this
-      thisWidget.input.addEventListener('change', () =>
+      thisWidget.input.addEventListener('change', function () {
         thisWidget.setValue(thisWidget.input.value)
-      )
-      thisWidget.linkIncrease.addEventListener('click', () =>
+      })
+      thisWidget.linkIncrease.addEventListener('click', function () {
         thisWidget.setValue(thisWidget.value + 1)
-      )
-      thisWidget.linkDecrease.addEventListener('click', () =>
+      })
+      thisWidget.linkDecrease.addEventListener('click', function () {
         thisWidget.setValue(thisWidget.value - 1)
-      )
+      })
     }
     announce() {
       const thisWidget = this
-      const event = new Event('updated')
+      const event = new CustomEvent('updated', {
+        bubbles: true,
+      })
 
       thisWidget.element.dispatchEvent(event)
     }
@@ -375,12 +382,20 @@
       this.dom.toggleTrigger = element.querySelector(select.cart.toggleTrigger)
       this.dom.productList = element.querySelector(select.cart.productList)
       //console.log(this.dom.productList)
+
+      this.dom.deliveryFee = element.querySelector(select.cart.deliveryFee)
+      this.dom.subtotalPrice = element.querySelector(select.cart.subtotalPrice)
+      this.dom.totalPrice = element.querySelector(select.cart.totalPrice)
+      this.dom.totalNumber = element.querySelector(select.cart.totalNumber)
     }
 
     initActions() {
       const thisCart = this
       thisCart.dom.toggleTrigger.addEventListener('click', () => {
         thisCart.dom.wrapper.classList.toggle(classNames.cart.wrapperActive)
+      })
+      thisCart.dom.productList.addEventListener('updated', function () {
+        thisCart.update()
       })
     }
 
@@ -390,7 +405,27 @@
       const generatedDOM = utils.createDOMFromHTML(generatedHTML)
       this.dom.productList.appendChild(generatedDOM)
       this.products.push(new CartProduct(menuProduct, generatedDOM))
-      //console.log('this.products', this.products)
+      //console.log(this.products)
+      this.update()
+    }
+    update() {
+      const thisCart = this
+      const deliveryFee = settings.cart.defaultDeliveryFee
+      let totalNumber = 0
+      let subtotalPrice = 0
+
+      for (let product of thisCart.products) {
+        totalNumber += product.amount
+        subtotalPrice += product.price
+      }
+      //thisCart.totalPrice = subtotalPrice == 0 ? 0 : subtotalPrice + deliveryFee
+
+      thisCart.dom.totalPrice.innerText = subtotalPrice + deliveryFee
+      console.log(this.dom.totalPrice)
+      thisCart.dom.totalNumber.innerHTML = totalNumber
+
+      thisCart.dom.subtotalPrice.innerHTML = subtotalPrice
+      thisCart.dom.deliveryFee.innerHTML = totalNumber == 0 ? 0 : deliveryFee
     }
   }
 
@@ -424,13 +459,21 @@
       )
     }
     initAmountWidget() {
-      this.amountWidget = new AmountWidget(this.dom.amountWidget)
-      //console.log(this.dom.price.innerHTML, this.price, this.amount)
-      this.dom.amountWidget.addEventListener('updated', () => {
-        this.amount = this.amountWidget.input.value
-        this.price = this.amount * this.priceSingle
-        this.dom.price.innerText = this.price
-        //console.log(this.dom.price.innerHTML, this.price, this.amount)
+      const thisCartProduct = this
+      thisCartProduct.amountWidget = new AmountWidget(
+        thisCartProduct.dom.amountWidget
+      )
+
+      console.log('Price:', thisCartProduct.price)
+      console.log('Amount:', thisCartProduct.amount)
+
+      thisCartProduct.dom.amountWidget.addEventListener('updated', function () {
+        thisCartProduct.amount = thisCartProduct.amountWidget.input.value
+        thisCartProduct.price =
+          thisCartProduct.amount * thisCartProduct.priceSingle
+        console.log('Price:', thisCartProduct.price)
+        console.log('Amount:', thisCartProduct.amount)
+        thisCartProduct.dom.price.innerText = thisCartProduct.price
       })
     }
   }
