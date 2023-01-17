@@ -385,7 +385,7 @@
 
       this.dom.deliveryFee = element.querySelector(select.cart.deliveryFee)
       this.dom.subtotalPrice = element.querySelector(select.cart.subtotalPrice)
-      this.dom.totalPrice = element.querySelector(select.cart.totalPrice)
+      this.dom.totalPrice = element.querySelectorAll(select.cart.totalPrice)
       this.dom.totalNumber = element.querySelector(select.cart.totalNumber)
     }
 
@@ -420,7 +420,10 @@
       }
       //thisCart.totalPrice = subtotalPrice == 0 ? 0 : subtotalPrice + deliveryFee
 
-      thisCart.dom.totalPrice.innerText = subtotalPrice + deliveryFee
+      //.innerText = subtotalPrice + deliveryFee
+      for (let singleTotalPrice of thisCart.dom.totalPrice) {
+        singleTotalPrice.innerHTML = subtotalPrice + deliveryFee
+      }
       console.log(this.dom.totalPrice)
       thisCart.dom.totalNumber.innerHTML = totalNumber
 
@@ -468,12 +471,12 @@
       console.log('Amount:', thisCartProduct.amount)
 
       thisCartProduct.dom.amountWidget.addEventListener('updated', function () {
-        thisCartProduct.amount = thisCartProduct.amountWidget.input.value
+        thisCartProduct.amount = thisCartProduct.amountWidget.value
         thisCartProduct.price =
           thisCartProduct.amount * thisCartProduct.priceSingle
         console.log('Price:', thisCartProduct.price)
         console.log('Amount:', thisCartProduct.amount)
-        thisCartProduct.dom.price.innerText = thisCartProduct.price
+        thisCartProduct.dom.price.innerHTML = thisCartProduct.price
       })
     }
   }
