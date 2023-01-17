@@ -397,6 +397,9 @@
       thisCart.dom.productList.addEventListener('updated', function () {
         thisCart.update()
       })
+      thisCart.dom.productList.addEventListener('remove', function (e) {
+        thisCart.remove(e.detail.cartProduct)
+      })
     }
 
     add(menuProduct) {
@@ -406,6 +409,16 @@
       this.dom.productList.appendChild(generatedDOM)
       this.products.push(new CartProduct(menuProduct, generatedDOM))
       //console.log(this.products)
+      this.update()
+    }
+
+    remove(cartProduct) {
+      cartProduct.dom.wrapper.remove()
+      console.log(this.products)
+      console.log(cartProduct)
+      const index = this.products.indexOf(cartProduct)
+      console.log(index)
+      this.products.splice(index, 1)
       this.update()
     }
     update() {
@@ -424,7 +437,7 @@
       for (let singleTotalPrice of thisCart.dom.totalPrice) {
         singleTotalPrice.innerHTML = subtotalPrice + deliveryFee
       }
-      console.log(this.dom.totalPrice)
+      //console.log(this.dom.totalPrice)
       thisCart.dom.totalNumber.innerHTML = totalNumber
 
       thisCart.dom.subtotalPrice.innerHTML = subtotalPrice
@@ -443,6 +456,7 @@
       thisCartProduct.params = menuProduct.params
       this.getElements(element)
       this.initAmountWidget()
+      this.initActions()
       //console.log('thisCartProduct', thisCartProduct)
     }
     getElements(element) {
@@ -467,16 +481,40 @@
         thisCartProduct.dom.amountWidget
       )
 
-      console.log('Price:', thisCartProduct.price)
-      console.log('Amount:', thisCartProduct.amount)
+      //console.log('Price:', thisCartProduct.price)
+      //console.log('Amount:', thisCartProduct.amount)
 
       thisCartProduct.dom.amountWidget.addEventListener('updated', function () {
         thisCartProduct.amount = thisCartProduct.amountWidget.value
         thisCartProduct.price =
           thisCartProduct.amount * thisCartProduct.priceSingle
-        console.log('Price:', thisCartProduct.price)
-        console.log('Amount:', thisCartProduct.amount)
+        //console.log('Price:', thisCartProduct.price)
+        //console.log('Amount:', thisCartProduct.amount)
         thisCartProduct.dom.price.innerHTML = thisCartProduct.price
+      })
+    }
+    remove() {
+      const thisCartProduct = this
+
+      const event = new CustomEvent('remove', {
+        bubbles: true,
+        detail: {
+          cartProduct: thisCartProduct,
+        },
+      })
+
+      thisCartProduct.dom.wrapper.dispatchEvent(event)
+    }
+    initActions() {
+      const thisCartProduct = this
+      thisCartProduct.dom.remove.addEventListener('click', function (e) {
+        e.preventDefault()
+        console.log('remove')
+        thisCartProduct.remove()
+      })
+      thisCartProduct.dom.edit.addEventListener('click', function (e) {
+        e.preventDefault()
+        console.log('edit')
       })
     }
   }
