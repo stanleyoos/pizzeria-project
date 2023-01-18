@@ -413,6 +413,7 @@
     }
 
     remove(cartProduct) {
+      // console.log('test')
       cartProduct.dom.wrapper.remove()
       console.log(this.products)
       console.log(cartProduct)
