@@ -77,6 +77,11 @@
     cart: {
       defaultDeliveryFee: 20,
     },
+    db: {
+      url: '//localhost:3131',
+      products: 'products',
+      orders: 'orders',
+    },
     // CODE ADDED END
   }
 
@@ -381,7 +386,9 @@
       this.dom.wrapper = element
       this.dom.toggleTrigger = element.querySelector(select.cart.toggleTrigger)
       this.dom.productList = element.querySelector(select.cart.productList)
-      //console.log(this.dom.productList)
+      this.dom.form = element.querySelector(select.cart.form)
+      this.dom.address = element.querySelector(select.cart.address)
+      this.dom.phone = element.querySelector(select.cart.phone)
 
       this.dom.deliveryFee = element.querySelector(select.cart.deliveryFee)
       this.dom.subtotalPrice = element.querySelector(select.cart.subtotalPrice)
@@ -400,6 +407,40 @@
       thisCart.dom.productList.addEventListener('remove', function (e) {
         thisCart.remove(e.detail.cartProduct)
       })
+      thisCart.dom.form.addEventListener('submit', function (e) {
+        e.preventDefault()
+        thisCart.sendOrder()
+      })
+    }
+
+    sendOrder() {
+      const thisCart = this
+      const url = settings.db.url + '/' + settings.db.orders
+      const payload = {
+        address: thisCart.dom.address.value,
+        phone: thisCart.dom.phone.value,
+        totalPrice: thisCart.totalPrice,
+        subtotalPrice: thisCart.subtotalPrice,
+        totalNumber: thisCart.totalNumber,
+        deliveryFee: thisCart.totalNumber == 0 ? 0 : 20,
+        products: [],
+      }
+
+      for (let product of thisCart.products) {
+        payload.products.push(product.getData())
+      }
+      console.log(payload)
+
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      }
+      fetch(url, options)
+        .then((res) => res.json())
+        .then((data) => console.log(data))
     }
 
     add(menuProduct) {
@@ -432,17 +473,19 @@
         totalNumber += product.amount
         subtotalPrice += product.price
       }
-      //thisCart.totalPrice = subtotalPrice == 0 ? 0 : subtotalPrice + deliveryFee
+
+      thisCart.totalPrice = subtotalPrice == 0 ? 0 : subtotalPrice + deliveryFee
+      thisCart.totalNumber = totalNumber
+      thisCart.subtotalPrice = subtotalPrice
+
+      thisCart.dom.totalNumber.innerHTML = totalNumber
+      thisCart.dom.subtotalPrice.innerHTML = subtotalPrice
+      thisCart.dom.deliveryFee.innerHTML = totalNumber == 0 ? 0 : deliveryFee
 
       //.innerText = subtotalPrice + deliveryFee
       for (let singleTotalPrice of thisCart.dom.totalPrice) {
         singleTotalPrice.innerHTML = subtotalPrice + deliveryFee
       }
-      //console.log(this.dom.totalPrice)
-      thisCart.dom.totalNumber.innerHTML = totalNumber
-
-      thisCart.dom.subtotalPrice.innerHTML = subtotalPrice
-      thisCart.dom.deliveryFee.innerHTML = totalNumber == 0 ? 0 : deliveryFee
     }
   }
 
@@ -475,6 +518,17 @@
       thisCartProduct.dom.remove = element.querySelector(
         select.cartProduct.remove
       )
+    }
+
+    getData() {
+      const data = {}
+      data.id = this.id
+      data.name = this.name
+      data.amount = this.amount
+      data.price = this.price
+      data.priceSingle = this.priceSingle
+      data.params = this.params
+      return data
     }
     initAmountWidget() {
       const thisCartProduct = this
@@ -526,11 +580,24 @@
       for (let productData in this.data.products) {
         // console.log(productData)
         // console.log(this.data.products[productData])
-        new Product(productData, this.data.products[productData])
+        new Product(
+          this.data.products[productData].id,
+          this.data.products[productData]
+        )
       }
     },
     initData: function () {
-      this.data = dataSource
+      this.data = {}
+      const url = settings.db.url + '/' + settings.db.products
+
+      fetch(url)
+        .then((res) => res.json())
+        .then((data) => {
+          this.data.products = data
+          this.initMenu()
+        })
+
+      //console.log(this.data)
     },
     initCart: function () {
       const thisApp = this
@@ -545,7 +612,7 @@
       // console.log('settings:', settings)
       // console.log('templates:', templates)
       this.initData()
-      this.initMenu()
+      // this.initMenu()
       this.initCart()
     },
   }
