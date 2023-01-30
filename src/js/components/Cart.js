@@ -85,10 +85,10 @@ class Cart {
   remove(cartProduct) {
     // console.log('test')
     cartProduct.dom.wrapper.remove()
-    console.log(this.products)
-    console.log(cartProduct)
+    //console.log(this.products)
+    //console.log(cartProduct)
     const index = this.products.indexOf(cartProduct)
-    console.log(index)
+    //console.log(index)
     this.products.splice(index, 1)
     this.update()
   }
