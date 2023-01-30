@@ -113,7 +113,9 @@ class Cart {
 
     //.innerText = subtotalPrice + deliveryFee
     for (let singleTotalPrice of thisCart.dom.totalPrice) {
-      singleTotalPrice.innerHTML = subtotalPrice + deliveryFee
+      thisCart.totalNumber === 0
+        ? (singleTotalPrice.innerHTML = 0)
+        : (singleTotalPrice.innerHTML = subtotalPrice + deliveryFee)
     }
   }
 }
