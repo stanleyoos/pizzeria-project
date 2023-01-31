@@ -161,8 +161,10 @@ class Booking {
         !allAvailable &&
         thisBooking.booked[thisBooking.date][thisBooking.hour].includes(tableId)
       ) {
+        console.log('added', tableId)
         table.classList.add(classNames.booking.tableBooked)
       } else {
+        console.log('removed', tableId)
         table.classList.remove(classNames.booking.tableBooked)
       }
     }
