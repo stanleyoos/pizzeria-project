@@ -9,6 +9,7 @@ class Booking {
     this.render(element)
     this.initWidgets()
     this.getData()
+    this.selectedTable
   }
 
   getData() {
@@ -138,7 +139,7 @@ class Booking {
 
     thisBooking.date = thisBooking.datePicker.value
     //console.log(thisBooking.hourPicker.value)
-    thisBooking.hour = thisBooking.hourPicker.value
+    thisBooking.hour = utils.hourToNumber(thisBooking.hourPicker.value)
 
     let allAvailable = false
 
@@ -151,6 +152,7 @@ class Booking {
     }
 
     for (let table of thisBooking.dom.tables) {
+      table.classList.remove('reserved')
       let tableId = table.getAttribute(settings.booking.tableIdAttribute)
       if (!isNaN(tableId)) {
         // !isNaN("3") => true
@@ -161,10 +163,8 @@ class Booking {
         !allAvailable &&
         thisBooking.booked[thisBooking.date][thisBooking.hour].includes(tableId)
       ) {
-        console.log('added', tableId)
         table.classList.add(classNames.booking.tableBooked)
       } else {
-        console.log('removed', tableId)
         table.classList.remove(classNames.booking.tableBooked)
       }
     }
@@ -193,8 +193,35 @@ class Booking {
     )
 
     this.dom.tables = element.querySelectorAll(select.booking.tables)
+    this.dom.tablesDiv = element.querySelector(select.booking.tablesDiv)
+    //console.log(this.dom.tablesDiv)
+  }
 
-    //console.log(this.dom.tables)
+  initTables(e) {
+    for (let table of this.dom.tables) {
+      if (table.classList.contains('selected')) {
+        table.classList.remove('selected')
+        this.selectedTable = ''
+      }
+    }
+    const et = e.target
+    e.preventDefault()
+    if (et.classList.contains('table')) {
+      if (!et.classList.contains('booked')) {
+        console.log(et)
+        if (et.classList.contains('selected')) {
+          et.classList.remove('selected')
+          this.selectedTable = ''
+          console.log(this.selectedTable)
+        } else {
+          et.classList.add('selected')
+          this.selectedTable = et.getAttribute('data-table')
+          console.log(this.selectedTable)
+        }
+      } else {
+        alert('Table is already booked!')
+      }
+    }
   }
 
   initWidgets() {
@@ -204,8 +231,13 @@ class Booking {
     this.datePicker = new DatePicker(this.dom.datePicker)
     this.hourPicker = new HourPicker(this.dom.hourPicker)
 
-    thisBooking.dom.wrapper.addEventListener('updated', function () {
+    thisBooking.dom.tablesDiv.addEventListener('click', function (e) {
+      thisBooking.initTables(e)
+    })
+
+    thisBooking.dom.wrapper.addEventListener('updated', function (e) {
       thisBooking.updateDOM()
+      thisBooking.initTables(e)
     })
   }
 }
