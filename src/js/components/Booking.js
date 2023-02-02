@@ -10,6 +10,7 @@ class Booking {
     this.initWidgets()
     this.getData()
     this.selectedTable
+    this.starters = []
   }
 
   getData() {
@@ -141,6 +142,9 @@ class Booking {
     //console.log(thisBooking.hourPicker.value)
     thisBooking.hour = utils.hourToNumber(thisBooking.hourPicker.value)
 
+    thisBooking.phone = this.dom.phone.value
+    thisBooking.address = this.dom.address.value
+
     let allAvailable = false
 
     if (
@@ -195,6 +199,13 @@ class Booking {
     this.dom.tables = element.querySelectorAll(select.booking.tables)
     this.dom.tablesDiv = element.querySelector(select.booking.tablesDiv)
     //console.log(this.dom.tablesDiv)
+
+    this.dom.confirmButton = element.querySelector(
+      select.booking.orderConfirmation
+    )
+
+    this.dom.phone = element.querySelector(select.booking.phone)
+    this.dom.address = element.querySelector(select.booking.address)
   }
 
   initTables(e) {
@@ -212,11 +223,9 @@ class Booking {
         if (et.classList.contains('selected')) {
           et.classList.remove('selected')
           this.selectedTable = ''
-          console.log(this.selectedTable)
         } else {
           et.classList.add('selected')
           this.selectedTable = et.getAttribute('data-table')
-          console.log(this.selectedTable)
         }
       } else {
         alert('Table is already booked!')
@@ -239,6 +248,44 @@ class Booking {
       thisBooking.updateDOM()
       thisBooking.initTables(e)
     })
+
+    thisBooking.dom.confirmButton.addEventListener('click', function (e) {
+      e.preventDefault()
+      thisBooking.sendBooking()
+    })
+  }
+
+  sendBooking() {
+    const thisBooking = this
+    const url = settings.db.url + '/' + settings.db.bookings
+    const payload = {
+      date: thisBooking.date,
+      hour: thisBooking.hour,
+      table: Number(thisBooking.selectedTable),
+      duration: thisBooking.hoursAmount.value,
+      ppl: thisBooking.peopleAmount.value,
+      startes: [],
+      phone: thisBooking.dom.phone.value,
+      address: thisBooking.dom.address.value,
+    }
+
+    thisBooking.makeBooked(
+      thisBooking.date,
+      thisBooking.hour,
+      thisBooking.hoursAmount.value,
+      Number(thisBooking.selectedTable)
+    )
+
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    }
+    fetch(url, options)
+      .then((res) => res.json())
+      .then((data) => console.log(data))
   }
 }
 
