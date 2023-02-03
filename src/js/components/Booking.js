@@ -206,31 +206,33 @@ class Booking {
 
     this.dom.phone = element.querySelector(select.booking.phone)
     this.dom.address = element.querySelector(select.booking.address)
+
+    this.dom.bookingOptions = element.querySelector('.booking-options')
   }
 
   initTables(e) {
-    for (let table of this.dom.tables) {
-      if (table.classList.contains('selected')) {
-        table.classList.remove('selected')
-        this.selectedTable = ''
-      }
-    }
-    const et = e.target
-    e.preventDefault()
-    if (et.classList.contains('table')) {
-      if (!et.classList.contains('booked')) {
-        console.log(et)
-        if (et.classList.contains('selected')) {
-          et.classList.remove('selected')
-          this.selectedTable = ''
-        } else {
-          et.classList.add('selected')
-          this.selectedTable = et.getAttribute('data-table')
-        }
+    if (e.target.getAttribute('data-table')) {
+      if (e.target.classList.contains('selected')) {
+        e.target.classList.remove('selected')
+        this.selectedTable = 0
+        console.log(this.selectedTable)
       } else {
-        alert('Table is already booked!')
+        if (e.target.classList.contains('booked')) {
+          alert('Table is already booked')
+        } else {
+          e.target.classList.add('selected')
+          this.selectedTable = e.target.getAttribute('data-table')
+          console.log(this.selectedTable)
+        }
       }
     }
+  }
+
+  clearTables() {
+    for (let table of this.dom.tables) {
+      table.classList.remove('selected')
+    }
+    this.selectedTable = 0
   }
 
   initWidgets() {
@@ -246,12 +248,26 @@ class Booking {
 
     thisBooking.dom.wrapper.addEventListener('updated', function (e) {
       thisBooking.updateDOM()
+      thisBooking.clearTables()
       thisBooking.initTables(e)
     })
 
     thisBooking.dom.confirmButton.addEventListener('click', function (e) {
       e.preventDefault()
       thisBooking.sendBooking()
+    })
+
+    this.dom.bookingOptions.addEventListener('click', function (e) {
+      if (e.target.type == 'checkbox' && e.target.name == 'starter') {
+        if (!thisBooking.starters.includes(e.target.value)) {
+          thisBooking.starters.push(e.target.value)
+          console.log(thisBooking.starters)
+        } else {
+          const index = thisBooking.starters.indexOf(e.target.value)
+          thisBooking.starters.splice(index, 1)
+          console.log(thisBooking.starters)
+        }
+      }
     })
   }
 
@@ -264,7 +280,7 @@ class Booking {
       table: Number(thisBooking.selectedTable),
       duration: thisBooking.hoursAmount.value,
       ppl: thisBooking.peopleAmount.value,
-      startes: [],
+      startes: thisBooking.starters,
       phone: thisBooking.dom.phone.value,
       address: thisBooking.dom.address.value,
     }
