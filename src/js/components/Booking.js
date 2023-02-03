@@ -220,6 +220,7 @@ class Booking {
         if (e.target.classList.contains('booked')) {
           alert('Table is already booked')
         } else {
+          this.clearTables()
           e.target.classList.add('selected')
           this.selectedTable = e.target.getAttribute('data-table')
           console.log(this.selectedTable)
