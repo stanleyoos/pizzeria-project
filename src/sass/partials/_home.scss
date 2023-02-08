@@ -23,7 +23,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-
+  background-size: cover;
   a {
     text-decoration: none;
     color: white;
@@ -50,5 +50,27 @@
   }
   #smaller {
     font-size: 14px;
+  }
+}
+
+.main-carousel {
+  margin-top: 100px;
+  height: 200px;
+}
+
+.carousel-cell {
+  display: flex;
+  align-items: center;
+
+  width: 100%; /* full width */
+  height: 200px; /* height of carousel */
+  margin-right: 10px;
+
+  &.image {
+    flex: 1;
+  }
+
+  &.description {
+    flex: 1;
   }
 }

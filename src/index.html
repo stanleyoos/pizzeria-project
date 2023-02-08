@@ -18,6 +18,10 @@
       href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/flickity@2/dist/flickity.min.css"
+    />
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
@@ -107,6 +111,33 @@
           <div class='opening-hours'><p>OPENING HOURS:</p>
             <p id='smaller'>TUE-SUN, 12PM - 12AM</p></div>
         </header>
+
+        <div
+          class='main-carousel'
+          data-flickity='{ "cellAlign": "left", "contain": true, "autoplay" : true }'
+        >
+          <div class='carousel-cell'>
+            <div class='image'><img
+                src='./images/homepage/pizza-4.jpg'
+                alt=''
+              /></div>
+            <div class='description'>
+              <h1>Title</h1>
+              <p>description</p>
+              <p>Person's name</p>
+            </div>
+          </div>
+          <div class='carousel-cell'>
+            <img src='./images/homepage/pizza-5.jpg' alt='' />
+          </div>
+          <div class='carousel-cell'>
+            <img src='./images/homepage/pizza-6.jpg' alt='' />
+          </div>
+          <div class='carousel-cell'>
+            <img src='./images/homepage/pizza-7.jpg' alt='' />
+          </div>
+
+        </div>
 
       </article>
       <!-- home page -->
@@ -313,6 +344,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.0/handlebars.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="vendor/range-slider.min.js"></script>
+    <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
     <script src="js/app.js" type="module"></script>
   </body>
 </html>
