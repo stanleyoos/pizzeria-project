@@ -66,11 +66,76 @@
   height: 201px; /* height of carousel */
   margin-right: 10px;
 
-  &.image {
+  & .image {
+    width: 100%;
+    height: 100%;
+    display: flex;
     flex: 1;
   }
 
-  &.description {
+  & .description {
+    margin-left: 20px;
+    color: rgb(83, 83, 83);
     flex: 1;
+
+    & #name {
+      font-style: italic;
+    }
+  }
+}
+
+.flickity-button {
+  background: #333;
+}
+.flickity-button:hover {
+  background: #f90;
+}
+
+.flickity-prev-next-button {
+  width: 30px;
+  height: 30px;
+  border-radius: 5px;
+}
+/* icon color */
+.flickity-button-icon {
+  fill: white;
+}
+/* position outside */
+.flickity-prev-next-button.previous {
+  left: -40px;
+}
+.flickity-prev-next-button.next {
+  right: -40px;
+}
+
+//gallery
+
+.gallery {
+  width: 100%;
+  margin-top: 100px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.item {
+  width: 100%;
+  height: 120px;
+
+  & :hover {
+    border: 4px solid rgb(1, 125, 248);
+  }
+
+  & img {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.link {
+  margin-top: 40px;
+
+  & a {
+    color: black;
   }
 }
