@@ -2,13 +2,16 @@ export const select = {
   templateOf: {
     menuProduct: '#template-menu-product',
     cartProduct: '#template-cart-product',
-    bookingWidget: '#template-booking-widget', // CODE ADDED
+    bookingWidget: '#template-booking-widget',
+    homePage: '#template-home-page',
+    // CODE ADDED
   },
   containerOf: {
     menu: '#product-list',
     cart: '#cart',
     pages: '#pages',
     booking: '.booking-wrapper',
+    homePage: '.home-page-wrapper',
   },
   all: {
     menuProducts: '#product-list > .product',
@@ -47,9 +50,11 @@ export const select = {
     orderConfirmation: '.btn-secondary',
     phone: '.order-confirmation [name="phone"]',
     address: '.order-confirmation [name="address"]',
+    options: '.booking-options',
   },
   nav: {
     links: '.main-nav a',
+    homepage: '.refs a',
   },
   // CODE ADDED START
   cart: {
@@ -91,6 +96,10 @@ export const classNames = {
   },
   pages: {
     active: 'active',
+  },
+  table: {
+    selected: 'selected',
+    booked: 'booked',
   },
 }
 
@@ -135,5 +144,8 @@ export const templates = {
   ),
   bookingWidget: Handlebars.compile(
     document.querySelector(select.templateOf.bookingWidget).innerHTML
+  ),
+  homePage: Handlebars.compile(
+    document.querySelector(select.templateOf.homePage).innerHTML
   ),
 }

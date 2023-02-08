@@ -156,7 +156,6 @@ class Booking {
     }
 
     for (let table of thisBooking.dom.tables) {
-      table.classList.remove('reserved')
       let tableId = table.getAttribute(settings.booking.tableIdAttribute)
       if (!isNaN(tableId)) {
         // !isNaN("3") => true
@@ -207,23 +206,23 @@ class Booking {
     this.dom.phone = element.querySelector(select.booking.phone)
     this.dom.address = element.querySelector(select.booking.address)
 
-    this.dom.bookingOptions = element.querySelector('.booking-options')
+    this.dom.bookingOptions = element.querySelector(select.booking.options)
   }
 
   initTables(e) {
-    if (e.target.getAttribute('data-table')) {
-      if (e.target.classList.contains('selected')) {
-        e.target.classList.remove('selected')
+    const tableId = e.target.getAttribute('data-table')
+    const target = e.target
+    if (tableId) {
+      if (target.classList.contains(classNames.table.selected)) {
+        target.classList.remove(classNames.table.selected)
         this.selectedTable = 0
-        console.log(this.selectedTable)
       } else {
-        if (e.target.classList.contains('booked')) {
+        if (target.classList.contains(classNames.table.booked)) {
           alert('Table is already booked')
         } else {
           this.clearTables()
-          e.target.classList.add('selected')
-          this.selectedTable = e.target.getAttribute('data-table')
-          console.log(this.selectedTable)
+          target.classList.add(classNames.table.selected)
+          this.selectedTable = tableId
         }
       }
     }
@@ -231,7 +230,7 @@ class Booking {
 
   clearTables() {
     for (let table of this.dom.tables) {
-      table.classList.remove('selected')
+      table.classList.remove(classNames.table.selected)
     }
     this.selectedTable = 0
   }
@@ -259,12 +258,13 @@ class Booking {
     })
 
     this.dom.bookingOptions.addEventListener('click', function (e) {
-      if (e.target.type == 'checkbox' && e.target.name == 'starter') {
-        if (!thisBooking.starters.includes(e.target.value)) {
-          thisBooking.starters.push(e.target.value)
+      const target = e.target
+      if (target.type == 'checkbox' && target.name == 'starter') {
+        if (!thisBooking.starters.includes(target.value)) {
+          thisBooking.starters.push(target.value)
           console.log(thisBooking.starters)
         } else {
-          const index = thisBooking.starters.indexOf(e.target.value)
+          const index = thisBooking.starters.indexOf(target.value)
           thisBooking.starters.splice(index, 1)
           console.log(thisBooking.starters)
         }
