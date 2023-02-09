@@ -33,9 +33,13 @@ class Home {
     const thisApp = this
 
     thisApp.pages = document.querySelector(select.containerOf.pages).children
-    thisApp.navLinks = document.querySelectorAll(select.nav.homepage)
+    thisApp.navLinks = document.querySelectorAll(select.nav.links)
 
-    console.log(thisApp.navLinks)
+    thisApp.homePageLinks = document.querySelectorAll(select.nav.homepage)
+
+    console.log('Pages: ', this.pages)
+    console.log('Nav Links: ', this.navLinks)
+
     const idFromHash = window.location.hash.replace('#/', '')
     //console.log(idFromHash)
 
@@ -50,13 +54,14 @@ class Home {
 
     thisApp.activatePage(pageMatchingHash)
 
-    for (let link of thisApp.navLinks) {
+    for (let link of thisApp.homePageLinks) {
       link.addEventListener('click', function (e) {
         e.preventDefault()
         const clickedElement = this
 
         // get id from href attribute
         const id = clickedElement.getAttribute('href').replace('#', '')
+
         // run thisApp.activatePage with that id
         thisApp.activatePage(id)
 
