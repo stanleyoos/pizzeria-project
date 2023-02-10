@@ -42,6 +42,14 @@
   background-image: url('../../images/homepage/pizza-2.jpg');
 }
 
+.order-online:hover,
+.book-table:hover {
+  a {
+    padding-top: 30px;
+    transition: 1s ease;
+  }
+}
+
 .opening-hours {
   flex-direction: column;
   height: 120px;
@@ -147,10 +155,10 @@
     color: black;
     padding: 10px;
     font-size: 26px;
+  }
 
-    &.fa-heart {
-      color: red;
-    }
+  i:hover {
+    color: red;
   }
 }
 
